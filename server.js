@@ -150,6 +150,65 @@ app.post('/logout', (req, res) => {
     res.json({ message: "Выход выполнен" });
 });
 
+// ОБНОВЛЕНИЕ ПРОФИЛЯ
+
+app.post('/update-profile', requireRole(['user', 'admin']), async (req, res) => {
+    const { name, email, password } = req.body;
+    const userId = req.session.user.id;
+
+    if (!name || !email) {
+        return res.status(400).json({ message: "Имя и Email обязательны" });
+    }
+
+    try {
+        // Проверяем, не занят ли Email другим пользователем
+        const emailCheckSql = "SELECT id FROM users WHERE email = ? AND id != ?";
+        db.query(emailCheckSql, [email, userId], async (err, results) => {
+            if (err) {
+                return res.status(500).json({ message: "Ошибка базы данных" });
+            }
+
+            if (results.length > 0) {
+                return res.status(400).json({ message: "Email уже зарегистрирован другим пользователем" });
+            }
+
+            // Если пароль не указан, обновляем только имя и email
+            if (!password) {
+                const updateSql = "UPDATE users SET name = ?, email = ? WHERE id = ?";
+                db.query(updateSql, [name, email, userId], (err) => {
+                    if (err) {
+                        return res.status(500).json({ message: "Ошибка при обновлении профиля" });
+                    }
+
+                    // Обновляем данные сессии
+                    req.session.user.name = name;
+                    req.session.user.email = email;
+
+                    res.json({ message: "Профиль успешно обновлен", user: req.session.user });
+                });
+            } else {
+                // Хешируем новый пароль и обновляем все данные
+                const hashedPassword = await bcrypt.hash(password, 10);
+                const updateSql = "UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?";
+                db.query(updateSql, [name, email, hashedPassword, userId], (err) => {
+                    if (err) {
+                        return res.status(500).json({ message: "Ошибка при обновлении профиля" });
+                    }
+
+                    // Обновляем данные сессии
+                    req.session.user.name = name;
+                    req.session.user.email = email;
+
+                    res.json({ message: "Профиль успешно обновлен", user: req.session.user });
+                });
+            }
+        });
+    } catch (err) {
+        console.log('Ошибка при обновлении профиля:', err);
+        res.status(500).json({ message: "Ошибка сервера" });
+    }
+});
+
 app.listen(3000, () => {
     console.log("Сервер запущен на http://localhost:3000");
 });

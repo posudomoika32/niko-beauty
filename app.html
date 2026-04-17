@@ -274,14 +274,49 @@
                 </div>
             </div>
 
-            <button id="logoutBtnProfile" class="btn primary">Выйти из аккаунта</button>
-            <a href="#/home" class="btn outline">На главную</a>
+            <button id="editProfileBtn" class="btn primary">Редактировать профиль</button>
+            <button id="logoutBtnProfile" class="btn outline">Выйти из аккаунта</button>
+            <a href="#/home" class="btn outline" style="margin-top: 10px;">На главную</a>
         </div>
     </main>
 
     <footer class="footer">
         © 2026 Niko Beauty
     </footer>
+</div>
+
+<!-- ===== МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ПРОФИЛЯ ===== -->
+<div id="editProfileModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Редактировать профиль</h3>
+            <button class="modal-close" id="closeEditModal">&times;</button>
+        </div>
+        
+        <form id="editProfileForm" class="edit-profile-form">
+            <div class="form-group">
+                <label for="editName">Имя:</label>
+                <input type="text" id="editName" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editEmail">Email:</label>
+                <input type="email" id="editEmail" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editPassword">Новый пароль (оставьте пустым, чтобы не менять):</label>
+                <input type="password" id="editPassword" name="password" placeholder="Введите новый пароль">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn primary">Сохранить изменения</button>
+                <button type="button" class="btn outline" id="cancelEditBtn">Отмена</button>
+            </div>
+        </form>
+
+        <div id="editMessage" class="edit-message" style="display: none;"></div>
+    </div>
 </div>
 
 <!-- ===== СТРАНИЦА ДЕТАЛЕЙ УСЛУГ ===== -->
@@ -527,9 +562,98 @@ async function loadProfile() {
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', logout);
             }
+
+            // Инициализация кнопки редактирования и модального окна
+            setupEditProfileModal(user);
         }
     } catch (err) {
         console.log("Ошибка загрузки профиля");
+    }
+}
+
+// РЕДАКТИРОВАНИЕ ПРОФИЛЯ
+
+function setupEditProfileModal(user) {
+    const editBtn = document.getElementById('editProfileBtn');
+    const modal = document.getElementById('editProfileModal');
+    const closeBtn = document.getElementById('closeEditModal');
+    const cancelBtn = document.getElementById('cancelEditBtn');
+    const form = document.getElementById('editProfileForm');
+    const message = document.getElementById('editMessage');
+
+    // Открыть модальное окно
+    if (editBtn) {
+        editBtn.addEventListener('click', () => {
+            document.getElementById('editName').value = user.name;
+            document.getElementById('editEmail').value = user.email;
+            document.getElementById('editPassword').value = '';
+            message.style.display = 'none';
+            message.textContent = '';
+            modal.classList.add('active');
+        });
+    }
+
+    // Закрыть модальное окно
+    const closeModal = () => {
+        modal.classList.remove('active');
+        form.reset();
+    };
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+    // Закрытие при клике на фон
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    // Отправка формы
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('editName').value;
+            const email = document.getElementById('editEmail').value;
+            const password = document.getElementById('editPassword').value;
+
+            try {
+                const res = await fetch(`${API_URL}/update-profile`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ 
+                        name, 
+                        email, 
+                        password: password || null 
+                    })
+                });
+
+                const data = await res.json();
+
+                message.style.display = 'block';
+
+                if (res.ok) {
+                    message.className = 'edit-message success';
+                    message.textContent = 'Профиль успешно обновлен!';
+                    
+                    // Обновляем данные на странице
+                    document.getElementById('profileName').textContent = name;
+                    document.getElementById('profileEmail').textContent = email;
+                    
+                    setTimeout(() => {
+                        closeModal();
+                    }, 1500);
+                } else {
+                    message.className = 'edit-message error';
+                    message.textContent = data.message || 'Ошибка при обновлении профиля';
+                }
+            } catch (err) {
+                console.log('Ошибка:', err);
+                message.style.display = 'block';
+                message.className = 'edit-message error';
+                message.textContent = 'Ошибка сервера';
+            }
+        });
     }
 }
 
