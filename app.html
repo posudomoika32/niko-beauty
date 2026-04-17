@@ -168,5 +168,377 @@
     </section>
     <footer class="footer">© 2026 Niko Beauty</footer>
 </div>
+
+<div id="login" class="page auth-page" style="display: none;">
+    <div class="auth-container">
+        <h2>Вход в аккаунт</h2>
+
+        <form id="loginForm" class="auth-form">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Пароль" required>
+            <button type="submit" class="btn primary">Войти</button>
+        </form>
+
+        <p class="auth-switch">
+            Нет аккаунта? <a href="#/register">Зарегистрироваться</a>
+        </p>
+    </div>
+</div>
+
+<!-- ===== СТРАНИЦА РЕГИСТРАЦИИ ===== -->
+<div id="register" class="page auth-page" style="display: none;">
+    <div class="auth-container">
+        <h2>Создание аккаунта</h2>
+
+        <form id="registerForm" class="auth-form">
+            <input type="text" id="name" placeholder="Имя" required>
+            <input type="email" id="email-reg" placeholder="Email" required>
+            <input type="password" id="password-reg" placeholder="Пароль" required>
+            <button type="submit" class="btn primary">Зарегистрироваться</button>
+        </form>
+
+        <p class="auth-switch">
+            Уже есть аккаунт? <a href="#/login">Войти</a>
+        </p>
+    </div>
+</div>
+
+<!-- ===== СТРАНИЦА ПРОФИЛЯ ===== -->
+<div id="profile" class="page" style="display: none;">
+    <header class="header">
+        <div class="container nav">
+            <div class="logo">NIKO BEAUTY</div>
+            <ul class="menu">
+                <li><a href="#/home">На главную</a></li>
+            </ul>
+            <div class="auth-buttons"></div>
+        </div>
+    </header>
+
+    <main class="profile-container">
+        <div class="profile-card">
+            <h2>Личный кабинет</h2>
+            
+            <div class="profile-info">
+                <div class="info-block">
+                    <label>Имя:</label>
+                    <p id="profileName"></p>
+                </div>
+                <div class="info-block">
+                    <label>Email:</label>
+                    <p id="profileEmail"></p>
+                </div>
+                <div class="info-block">
+                    <label>Статус:</label>
+                    <p id="profileRole"></p>
+                </div>
+            </div>
+
+            <button id="logoutBtnProfile" class="btn primary">Выйти из аккаунта</button>
+            <a href="#/home" class="btn outline">На главную</a>
+        </div>
+    </main>
+
+    <footer class="footer">
+        © 2026 Niko Beauty
+    </footer>
+</div>
+
+<!-- ===== СТРАНИЦА ДЕТАЛЕЙ УСЛУГ ===== -->
+<div id="details" class="page" style="display: none;">
+    <header class="header">
+        <div class="container nav">
+            <div class="logo">NIKO BEAUTY</div>
+            <ul class="menu">
+                <li><a href="#/home">На главную</a></li>
+            </ul>
+            <div class="auth-buttons"></div>
+        </div>
+    </header>
+
+    <main class="detail">
+        <a class="back" href="#/home">← Вернуться на главную</a>
+
+        <h2 id="manicure">Маникюр</h2>
+        <p>Описание услуги «Маникюр». Здесь можно разместить текст, цену, длительность и т.д.</p>
+
+        <h3 id="pedicure">Педикюр</h3>
+        <p>Описание услуги «Педикюр».</p>
+
+        <h3 id="design">Дизайн</h3>
+        <p>Описание услуги «Дизайн».</p>
+
+        <h3 id="care">Уход для рук и ног</h3>
+        <p>Описание ухода.</p>
+
+        <h3 id="classic-massage">Классический массаж</h3>
+        <p>Описание классического массажа.</p>
+
+        <h3 id="relax">Релакс</h3>
+        <p>Описание релакс-массажа.</p>
+
+        <h3 id="sports-massage">Спортивный массаж</h3>
+        <p>Описание спортивного массажа.</p>
+
+        <h3 id="face-cleaning">Чистка лица</h3>
+        <p>Описание чистки лица.</p>
+
+        <h3 id="peeling">Пилинг</h3>
+        <p>Описание пилинга.</p>
+
+        <h3 id="injections">Инъекции красоты</h3>
+        <p>Описание инъекций.</p>
+
+        <h3 id="day-makeup">Дневной макияж</h3>
+        <p>Описание дневного макияжа.</p>
+
+        <h3 id="evening-makeup">Вечерний макияж</h3>
+        <p>Описание вечернего макияжа.</p>
+
+        <h3 id="wedding-makeup">Свадебный образ</h3>
+        <p>Описание свадебного образа.</p>
+    </main>
+
+    <footer class="footer">
+        © 2026 Niko Beauty
+    </footer>
+</div>
+
+<script>
+const API_URL = "http://localhost:3000";
+
+// Простая функция маршрутизации
+function parseRoute() {
+    const hash = window.location.hash.slice(1); // Убрать #
+    
+    if (!hash) {
+        return { page: 'home', param: null };
+    }
+
+    const parts = hash.split('/').filter(p => p);
+    const page = parts[0] || 'home';
+    const param = parts[1] || null;
+    
+    return { page, param };
+}
+
+function showPage(pageName = 'home', param = null) {
+    // Скрыть все страницы
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+        page.style.display = 'none';
+    });
+
+    // Показать нужную страницу
+    const page = document.getElementById(pageName);
+    if (page) {
+        page.classList.add('active');
+        page.style.display = 'block';
+        window.scrollTo(0, 0);
+
+        // Если указан параметр (якорь), прокрутить к нему
+        if (param) {
+            setTimeout(() => {
+                const element = document.getElementById(param);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 100);
+        }
+    }
+}
+
+function handleRoute() {
+    const { page, param } = parseRoute();
+    showPage(page, param);
+    
+    // Загрузить профиль если пользователь переходит на эту страницу
+    if (page === 'profile') {
+        loadProfile();
+    }
+}
+
+// Легаси-функция для обратной совместимости
+function goToPage(pageName, anchor = null) {
+    if (anchor) {
+        window.location.hash = `#/${pageName}/${anchor}`;
+    } else {
+        window.location.hash = `#/${pageName}`;
+    }
+}
+
+// ПРОВЕРКА АВТОРИЗАЦИИ
+
+async function checkUser() {
+    try {
+        const res = await fetch(`${API_URL}/me`, {
+            credentials: 'include'
+        });
+
+        if (res.ok) {
+            const user = await res.json();
+
+            const authBlock = document.querySelector('.auth-buttons');
+
+            if (authBlock) {
+                authBlock.innerHTML = `
+                    <div class="user-dropdown">
+                        <button class="user-name" onclick="goToPage('profile'); return false;">
+                            ${user.name}${user.role === 'admin' ? ' (Админ)' : ''}
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="#" onclick="goToPage('profile'); return false;">Мой профиль</a>
+                            <a href="#" id="logoutBtnMenu">Выйти</a>
+                        </div>
+                    </div>
+                `;
+
+                const logoutBtn = document.getElementById('logoutBtnMenu');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', logout);
+                }
+            }
+        }
+    } catch (err) {
+        console.log("Пользователь не авторизован");
+    }
+}
+
+// РЕГИСТРАЦИЯ
+
+async function handleRegister(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email-reg').value;
+    const password = document.getElementById('password-reg').value;
+
+    const res = await fetch(`${API_URL}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name, email, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+        goToPage('home');
+        setTimeout(() => checkUser(), 100);
+    } else {
+        alert(data.message);
+    }
+}
+
+// ВХОД
+
+async function handleLogin(e) {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const res = await fetch(`${API_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+        goToPage('home');
+        setTimeout(() => checkUser(), 100);
+    } else {
+        alert(data.message);
+    }
+}
+
+// ВЫХОД
+
+async function logout(e) {
+    e.preventDefault();
+
+    await fetch(`${API_URL}/logout`, {
+        method: 'POST',
+        credentials: 'include'
+    });
+
+    location.reload();
+}
+// ЗАГРУЗКА ДАННЫХ ПРОФИЛЯ
+
+async function loadProfile() {
+    try {
+        const res = await fetch(`${API_URL}/me`, {
+            credentials: 'include'
+        });
+
+        if (res.ok) {
+            const user = await res.json();
+            document.getElementById('profileName').textContent = user.name;
+            document.getElementById('profileEmail').textContent = user.email || 'Не указано';
+            document.getElementById('profileRole').textContent = user.role === 'admin' ? 'Администратор' : 'Пользователь';
+
+            const logoutBtn = document.getElementById('logoutBtnProfile');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', logout);
+            }
+        }
+    } catch (err) {
+        console.log("Ошибка загрузки профиля");
+    }
+}
+
+// АВТОПОДКЛЮЧЕНИЕ ФОРМ И ИНИЦИАЛИЗАЦИЯ
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Инициализировать маршрутизацию
+    handleRoute();
+    window.addEventListener('hashchange', handleRoute);
+
+    checkUser();
+
+    const registerForm = document.getElementById("registerForm");
+    if (registerForm) {
+        registerForm.addEventListener("submit", handleRegister);
+    }
+
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+        loginForm.addEventListener("submit", handleLogin);
+    }
+
+    // Переключение табов
+    (function(){
+        const tabs = document.querySelectorAll('#services .tab');
+        const groups = document.querySelectorAll('#services .cards-group');
+
+        function showGroup(name){
+            groups.forEach(g => {
+                g.hidden = g.dataset.group !== name;
+            });
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    const isActive = t === tab;
+                    t.classList.toggle('active', isActive);
+                    t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                });
+                showGroup(tab.dataset.tab);
+            });
+        });
+
+        // Инициализация: показать активную вкладку при загрузке
+        const active = document.querySelector('#services .tab.active') || tabs[0];
+        if(active) showGroup(active.dataset.tab);
+    })();
+});
+</script>
+
 </body>
 </html>
