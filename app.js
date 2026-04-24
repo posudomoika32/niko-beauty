@@ -1,64 +1,104 @@
 const API_URL = "http://localhost:3000";
 
-const serviceGroups = [
-    {
-        id: "nails",
-        title: "Ногтевой сервис",
-        cards: [
-            { id: "manicure", title: "Маникюр", className: "card-manicure" },
-            { id: "pedicure", title: "Педикюр", className: "card-pedicure" },
-            { id: "design", title: "Дизайн", className: "card-design" },
-            { id: "care", title: "Уход для рук и ног", className: "card-care" }
-        ]
-    },
-    {
-        id: "massage",
-        title: "Массаж",
-        cards: [
-            { id: "classic-massage", title: "Классический массаж", className: "card-classic-massage" },
-            { id: "relax", title: "Релакс", className: "card-relax" },
-            { id: "sports-massage", title: "Спортивный массаж", className: "card-sports-massage" }
-        ]
-    },
-    {
-        id: "cosmetology",
-        title: "Косметология",
-        cards: [
-            { id: "face-cleaning", title: "Чистка лица", className: "card-face-cleaning" },
-            { id: "peeling", title: "Пилинг", className: "card-peeling" },
-            { id: "injections", title: "Инъекции красоты", className: "card-injections" }
-        ]
-    },
-    {
-        id: "makeup",
-        title: "Макияж",
-        cards: [
-            { id: "day-makeup", title: "Дневной макияж", className: "card-day-makeup" },
-            { id: "evening-makeup", title: "Вечерний макияж", className: "card-evening-makeup" },
-            { id: "wedding-makeup", title: "Свадебный образ", className: "card-wedding-makeup" }
-        ]
-    }
-];
+let servicesShowcaseGroups = [];
+let detailSections = [];
+let servicesById = new Map();
+let serviceGroupById = new Map();
+let detailSectionsById = new Map();
 
-const detailSections = [
-    {
-        id: "manicure",
-        title: "Маникюр",
-        text: "Описание услуги «Маникюр». Здесь можно разместить текст, цену, длительность и т.д."
-    },
-    { id: "pedicure", title: "Педикюр", text: "Описание услуги «Педикюр»." },
-    { id: "design", title: "Дизайн", text: "Описание услуги «Дизайн»." },
-    { id: "care", title: "Уход для рук и ног", text: "Описание ухода." },
-    { id: "classic-massage", title: "Классический массаж", text: "Описание классического массажа." },
-    { id: "relax", title: "Релакс", text: "Описание релакс-массажа." },
-    { id: "sports-massage", title: "Спортивный массаж", text: "Описание спортивного массажа." },
-    { id: "face-cleaning", title: "Чистка лица", text: "Описание чистки лица." },
-    { id: "peeling", title: "Пилинг", text: "Описание пилинга." },
-    { id: "injections", title: "Инъекции красоты", text: "Описание инъекций." },
-    { id: "day-makeup", title: "Дневной макияж", text: "Описание дневного макияжа." },
-    { id: "evening-makeup", title: "Вечерний макияж", text: "Описание вечернего макияжа." },
-    { id: "wedding-makeup", title: "Свадебный образ", text: "Описание свадебного образа." }
-];
+function rebuildServiceIndexes() {
+    servicesById = new Map(
+        servicesShowcaseGroups.flatMap((group) => group.cards.map((card) => [card.id, card]))
+    );
+
+    serviceGroupById = new Map(
+        servicesShowcaseGroups.flatMap((group) => group.cards.map((card) => [card.id, group.id]))
+    );
+
+    detailSectionsById = new Map(detailSections.map((section) => [section.id, section]));
+}
+
+function applyServiceRows(rows) {
+    const sortedRows = [...rows].sort((a, b) => {
+        const orderDiff = Number(a.sortOrder || 0) - Number(b.sortOrder || 0);
+        return orderDiff || String(a.id).localeCompare(String(b.id));
+    });
+
+    const groupsMap = new Map();
+    const nextDetailSections = [];
+
+    sortedRows.forEach((row) => {
+        if (!groupsMap.has(row.groupId)) {
+            groupsMap.set(row.groupId, {
+                id: row.groupId,
+                label: row.groupLabel,
+                cards: []
+            });
+        }
+
+        groupsMap.get(row.groupId).cards.push({
+            id: row.id,
+            title: row.cardTitle || row.title,
+            imageUrl: row.imageUrl || ""
+        });
+
+        nextDetailSections.push({
+            id: row.id,
+            title: row.title,
+            text: row.description
+        });
+    });
+
+    if (!groupsMap.size || !nextDetailSections.length) {
+        return;
+    }
+
+    servicesShowcaseGroups = Array.from(groupsMap.values());
+    detailSections = nextDetailSections;
+    rebuildServiceIndexes();
+}
+
+async function loadServicesFromApi() {
+    try {
+        const res = await fetch(`${API_URL}/api/services`);
+        if (!res.ok) {
+            throw new Error(`Failed to load services: ${res.status}`);
+        }
+
+        const rows = await res.json();
+        if (Array.isArray(rows) && rows.length) {
+            applyServiceRows(rows);
+        }
+    } catch (error) {
+        console.log("Не удалось загрузить услуги из БД, используется локальный список.", error);
+    }
+}
+
+rebuildServiceIndexes();
+
+function getServiceHref(serviceId) {
+    return `#/details/${serviceId}`;
+}
+
+function getDefaultServiceId() {
+    return servicesShowcaseGroups[1]?.cards[0]?.id || servicesShowcaseGroups[0]?.cards[0]?.id || null;
+}
+
+function getGroupFirstServiceId(groupId) {
+    const group = servicesShowcaseGroups.find((item) => item.id === groupId);
+    return group?.cards[0]?.id || getDefaultServiceId();
+}
+
+function getServiceMediaStyle(imageUrl) {
+    if (!imageUrl) {
+        return "";
+    }
+
+    const safeUrl = String(imageUrl)
+        .replace(/'/g, "%27")
+        .replace(/"/g, "&quot;");
+    return ` style="background-image: url('${safeUrl}');"`;
+}
 
 function renderAuthButtons() {
     return `
@@ -69,7 +109,7 @@ function renderAuthButtons() {
     `;
 }
 
-function renderHeader({ homeLink = "#/home", menuItems = [], showAuthButtons = false }) {
+function renderHeader({ menuItems = [], showAuthButtons = false }) {
     const menuMarkup = menuItems
         .map((item) => `<li><a href="${item.href}">${item.label}</a></li>`)
         .join("");
@@ -87,33 +127,61 @@ function renderHeader({ homeLink = "#/home", menuItems = [], showAuthButtons = f
     `;
 }
 
-function renderServiceTabs() {
-    return serviceGroups
+function renderUnifiedServicesBlock(options = {}) {
+    const {
+        sectionId = "services",
+        title = "Услуги",
+        titleTag = "h2",
+        wrapperClass = "services-unified",
+        innerClass = "services-unified__inner"
+    } = options;
+
+    const titleMarkup = `<${titleTag} class="services-showcase__title services-showcase__title--compact">${title}</${titleTag}>`;
+
+    return `
+        <section id="${sectionId}" class="section services ${wrapperClass}">
+            <div class="${innerClass}">
+                ${titleMarkup}
+                <div class="services-showcase__tabs" role="tablist" aria-label="Категории услуг" data-services-scope="${sectionId}">
+                    ${renderServicesShowcaseTabs(sectionId)}
+                </div>
+                <div class="services-showcase__content">
+                    ${renderServicesShowcaseCards(sectionId)}
+                </div>
+            </div>
+        </section>
+    `;
+}
+
+function renderServicesShowcaseTabs(scopeId) {
+    return servicesShowcaseGroups
         .map((group, index) => {
             const isActive = index === 0;
             return `
                 <button
-                    class="tab${isActive ? " active" : ""}"
-                    role="tab"
-                    aria-selected="${isActive ? "true" : "false"}"
-                    data-tab="${group.id}"
+                    class="services-category${isActive ? " active" : ""}"
+                    type="button"
+                    data-services-scope-tab="${scopeId}"
+                    data-services-group="${group.id}"
                 >
-                    ${group.title}
+                    ${group.label}
                 </button>
             `;
         })
         .join("");
 }
 
-function renderServiceCards() {
-    return serviceGroups
+function renderServicesShowcaseCards(scopeId) {
+    return servicesShowcaseGroups
         .map((group, index) => {
+            const isActive = index === 0;
             const cardsMarkup = group.cards
                 .map(
                     (card) => `
-                        <a class="card-link" href="#/details/${card.id}" title="${card.title} — подробнее">
-                            <div class="card ${card.className}">
-                                <span>${card.title}</span>
+                        <a class="service-showcase-card" href="${getServiceHref(card.id)}" data-service-id="${card.id}"${getServiceMediaStyle(card.imageUrl)}>
+                            <div class="service-showcase-card__content">
+                                <h3>${card.title}</h3>
+                                <span class="service-showcase-card__icon">+</span>
                             </div>
                         </a>
                     `
@@ -121,8 +189,15 @@ function renderServiceCards() {
                 .join("");
 
             return `
-                <div class="cards-group" data-group="${group.id}"${index === 0 ? "" : " hidden"}>
-                    ${cardsMarkup}
+                <div
+                    class="service-showcase-group"
+                    ${isActive ? "" : "hidden"}
+                    data-services-scope-group="${scopeId}"
+                    data-services-cards="${group.id}"
+                >
+                    <div class="service-showcase-grid">
+                        ${cardsMarkup}
+                    </div>
                 </div>
             `;
         })
@@ -141,6 +216,84 @@ function renderDetailsContent() {
         .join("");
 }
 
+function renderDetailsCategoryTabs(activeGroupId) {
+    return servicesShowcaseGroups
+        .map((group) => {
+            const isActive = group.id === activeGroupId;
+            return `
+                <a
+                    class="services-category${isActive ? " active" : ""}"
+                    href="${getServiceHref(getGroupFirstServiceId(group.id))}"
+                >
+                    ${group.label}
+                </a>
+            `;
+        })
+        .join("");
+}
+
+function renderDetailsAccordion(activeServiceId) {
+    const activeGroupId = serviceGroupById.get(activeServiceId) || servicesShowcaseGroups[0]?.id;
+    const activeGroup = servicesShowcaseGroups.find((group) => group.id === activeGroupId);
+
+    if (!activeGroup) {
+        return "";
+    }
+
+    return activeGroup.cards
+        .map((card) => {
+            const section = detailSectionsById.get(card.id);
+            const isActive = card.id === activeServiceId;
+            const preview = section?.text || "Описание услуги скоро появится.";
+
+            return `
+                <article class="service-detail-item${isActive ? " active" : ""}">
+                    <button
+                        class="service-detail-item__toggle"
+                        type="button"
+                        data-detail-service="${card.id}"
+                        aria-expanded="${isActive ? "true" : "false"}"
+                    >
+                        <div class="service-detail-item__heading">
+                            <h2>${card.title}</h2>
+                            <p>${preview}</p>
+                        </div>
+                        <span class="service-detail-item__icon">${isActive ? "−" : "+"}</span>
+                    </button>
+                    <div class="service-detail-item__body">
+                        <div class="service-detail-item__media"${getServiceMediaStyle(card.imageUrl)}></div>
+                        <div class="service-detail-item__content">
+                            <p>${preview}</p>
+                            <a class="btn primary service-detail-item__action" href="#/services-page">Выбрать эту услугу</a>
+                        </div>
+                    </div>
+                </article>
+            `;
+        })
+        .join("");
+}
+
+function renderDetailsPageContent(activeServiceId) {
+    const currentServiceId = servicesById.has(activeServiceId) ? activeServiceId : getDefaultServiceId();
+    const activeGroupId = serviceGroupById.get(currentServiceId) || servicesShowcaseGroups[0]?.id;
+    const activeCard = servicesById.get(currentServiceId);
+
+    return `
+        <div class="service-detail-page">
+            <div class="services-showcase__tabs services-showcase__tabs--details" role="tablist" aria-label="Категории услуг">
+                ${renderDetailsCategoryTabs(activeGroupId)}
+            </div>
+            <div class="service-detail-page__intro">
+                <p class="service-detail-page__eyebrow">Подробности услуги</p>
+                <h1 class="services-showcase__title services-showcase__title--compact">${activeCard?.title || "Услуга"}</h1>
+            </div>
+            <div class="service-detail-page__accordion">
+                ${renderDetailsAccordion(currentServiceId)}
+            </div>
+        </div>
+    `;
+}
+
 function renderApp() {
     const appRoot = document.getElementById("app");
     if (!appRoot) {
@@ -152,7 +305,7 @@ function renderApp() {
             ${renderHeader({
                 menuItems: [
                     { href: "#/home/about", label: "О студии" },
-                    { href: "#/home/services", label: "Услуги" },
+                    { href: "#/services-page", label: "Услуги" },
                     { href: "#/home/contacts", label: "Контакты" }
                 ],
                 showAuthButtons: true
@@ -164,7 +317,7 @@ function renderApp() {
                     <p>Для гедонистов и ценителей прекрасного</p>
 
                     <div class="hero-buttons">
-                        <a href="#/register" class="btn primary">Записаться онлайн</a>
+                        <a href="#/services-page" class="btn primary">Выбрать услугу</a>
                         <button class="btn outline" type="button">Подарочный сертификат</button>
                     </div>
                 </div>
@@ -183,19 +336,13 @@ function renderApp() {
                 </div>
             </section>
 
-            <section id="services" class="section services">
-                <div class="container">
-                    <h2 class="section-title">Услуги</h2>
-
-                    <div class="tabs" role="tablist" aria-label="Услуги">
-                        ${renderServiceTabs()}
-                    </div>
-
-                    <div class="cards">
-                        ${renderServiceCards()}
-                    </div>
-                </div>
-            </section>
+            ${renderUnifiedServicesBlock({
+                sectionId: "services",
+                title: "НАШИ УСЛУГИ",
+                titleTag: "h2",
+                wrapperClass: "services-unified services-unified--home",
+                innerClass: "services-showcase__inner services-showcase__inner--home"
+            })}
 
             <section id="contacts" class="section contacts">
                 <div class="container">
@@ -205,7 +352,7 @@ function renderApp() {
                     <a href="https://www.instagram.com/nikrrwq?igsh=cWRveDRwOHJudzJ2">Instagram: @nikobeauty</a>
 
                     <p class="section-title">
-                        <a href="#/register" class="btn primary">Записаться онлайн</a>
+                        <a href="#/services-page" class="btn primary">Выбрать услугу</a>
                     </p>
                 </div>
             </section>
@@ -213,6 +360,29 @@ function renderApp() {
             <footer class="footer">
                 © 2026 Niko Beauty
             </footer>
+        </div>
+
+        <div id="services-page" class="page">
+            ${renderHeader({
+                menuItems: [
+                    { href: "#/home", label: "На главную" },
+                    { href: "#/services-page", label: "Услуги" },
+                    { href: "#/home/contacts", label: "Контакты" }
+                ],
+                showAuthButtons: true
+            })}
+
+            <main class="services-showcase">
+                <div class="services-showcase__inner">
+                    <h1 class="services-showcase__title">НАШИ УСЛУГИ</h1>
+                    <div class="services-showcase__tabs" role="tablist" aria-label="Категории услуг" data-services-scope="services-page">
+                        ${renderServicesShowcaseTabs("services-page")}
+                    </div>
+                    <div class="services-showcase__content">
+                        ${renderServicesShowcaseCards("services-page")}
+                    </div>
+                </div>
+            </main>
         </div>
 
         <div id="login" class="page auth-page">
@@ -322,8 +492,8 @@ function renderApp() {
             })}
 
             <main class="detail">
-                <a class="back" href="#/home">← Вернуться на главную</a>
-                ${renderDetailsContent()}
+                <a class="back" href="#/services-page">← Вернуться к услугам</a>
+                <div id="detailsContent"></div>
             </main>
 
             <footer class="footer">
@@ -347,7 +517,11 @@ function parseRoute() {
     return { page, param };
 }
 
-function showPage(pageName = "home", param = null) {
+let currentPageName = null;
+
+function showPage(pageName = "home", param = null, options = {}) {
+    const { scrollToTop = true } = options;
+
     document.querySelectorAll(".page").forEach((page) => {
         page.classList.remove("active");
     });
@@ -355,7 +529,11 @@ function showPage(pageName = "home", param = null) {
     const page = document.getElementById(pageName);
     if (page) {
         page.classList.add("active");
-        window.scrollTo(0, 0);
+        currentPageName = pageName;
+
+        if (scrollToTop) {
+            window.scrollTo(0, 0);
+        }
 
         if (param) {
             setTimeout(() => {
@@ -370,10 +548,18 @@ function showPage(pageName = "home", param = null) {
 
 function handleRoute() {
     const { page, param } = parseRoute();
-    showPage(page, param);
+    const isDetailsSwitch = currentPageName === "details" && page === "details";
+
+    showPage(page, param, {
+        scrollToTop: !isDetailsSwitch
+    });
 
     if (page === "profile") {
         loadProfile();
+    }
+
+    if (page === "details") {
+        renderDetailsView(param);
     }
 }
 
@@ -566,7 +752,6 @@ function setupEditProfileModal(user) {
                 });
 
                 const data = await res.json();
-
                 message.hidden = false;
 
                 if (res.ok) {
@@ -592,35 +777,68 @@ function setupEditProfileModal(user) {
     }
 }
 
-function setupServiceTabs() {
-    const tabs = document.querySelectorAll("#services .tab");
-    const groups = document.querySelectorAll("#services .cards-group");
+function setupScopedServiceTabs(scopeId) {
+    const tabs = document.querySelectorAll(`[data-services-scope-tab="${scopeId}"]`);
+    const groups = document.querySelectorAll(`[data-services-scope-group="${scopeId}"]`);
+
+    if (!tabs.length || !groups.length) {
+        return;
+    }
 
     function showGroup(name) {
         groups.forEach((group) => {
-            group.hidden = group.dataset.group !== name;
+            group.hidden = group.dataset.servicesCards !== name;
         });
     }
 
     tabs.forEach((tab) => {
         tab.addEventListener("click", () => {
             tabs.forEach((item) => {
-                const isActive = item === tab;
-                item.classList.toggle("active", isActive);
-                item.setAttribute("aria-selected", isActive ? "true" : "false");
+                item.classList.toggle("active", item === tab);
             });
 
-            showGroup(tab.dataset.tab);
+            showGroup(tab.dataset.servicesGroup);
         });
     });
 
-    const active = document.querySelector("#services .tab.active") || tabs[0];
-    if (active) {
-        showGroup(active.dataset.tab);
+    const activeTab = Array.from(tabs).find((tab) => tab.classList.contains("active")) || tabs[0];
+    if (activeTab) {
+        showGroup(activeTab.dataset.servicesGroup);
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function renderDetailsView(serviceId) {
+    const detailsRoot = document.getElementById("detailsContent");
+    if (!detailsRoot) {
+        return;
+    }
+
+    detailsRoot.innerHTML = renderDetailsPageContent(serviceId);
+
+    detailsRoot.querySelectorAll("[data-detail-service]").forEach((button) => {
+        button.addEventListener("click", () => {
+            const nextServiceId = button.dataset.detailService;
+            if (!nextServiceId || nextServiceId === serviceId) {
+                return;
+            }
+
+            window.location.hash = `#/details/${nextServiceId}`;
+        });
+    });
+
+    requestAnimationFrame(() => {
+        const activeItem = detailsRoot.querySelector(".service-detail-item.active");
+        if (activeItem) {
+            activeItem.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest"
+            });
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadServicesFromApi();
     renderApp();
     handleRoute();
     window.addEventListener("hashchange", handleRoute);
@@ -637,5 +855,6 @@ document.addEventListener("DOMContentLoaded", () => {
         loginForm.addEventListener("submit", handleLogin);
     }
 
-    setupServiceTabs();
+    setupScopedServiceTabs("services");
+    setupScopedServiceTabs("services-page");
 });
