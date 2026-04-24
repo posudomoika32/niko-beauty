@@ -32,7 +32,6 @@ body {
 /* страницы входа и регистрации */
 
 .auth-page {
-    display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
@@ -41,6 +40,10 @@ body {
         #f4efe9,
         #e8dfd8
     );
+}
+
+.auth-page.active {
+    display: flex;
 }
 
 .auth-container {

@@ -9,33 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Переключение между страницами */
-        .page {
-            display: none;
-        }
-        .page.active {
-            display: block;
-        }
-
-        /* Дополнительные стили для страницы деталей */
-        .detail {
-            max-width: 900px;
-            margin: 24px auto;
-            padding: 24px;
-        }
-        .detail h3 {
-            margin-top: 40px;
-        }
-        .back {
-            display: inline-block;
-            margin-bottom: 12px;
-            color: #7a3e1d;
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="app.css">
 </head>
 
 <body>
@@ -100,25 +74,25 @@
                 <!-- Ногтевой сервис -->
                 <div class="cards-group" data-group="nails">
                     <a class="card-link" href="#/details/manicure" title="Маникюр — подробнее">
-                        <div class="card" style="background-image:url('https://i.pinimg.com/736x/bb/8c/68/bb8c683382d6616c6c31d76386a2119d.jpg')">
+                        <div class="card card-manicure">
                             <span>Маникюр</span>
                         </div>
                     </a>
 
                     <a class="card-link" href="#/details/pedicure" title="Педикюр — подробнее">
-                        <div class="card" style="background-image:url('https://i.pinimg.com/1200x/18/6f/15/186f156d5a9a699e1370f42e6674c49b.jpg')">
+                        <div class="card card-pedicure">
                             <span>Педикюр</span>
                         </div>
                     </a>
 
                     <a class="card-link" href="#/details/design" title="Дизайн — подробнее">
-                        <div class="card" style="background-image:url('https://i.pinimg.com/736x/f7/07/dc/f707dca7a3ff529287ab0363f77b87d4.jpg')">
+                        <div class="card card-design">
                             <span>Дизайн</span>
                         </div>
                     </a>
 
                     <a class="card-link" href="#/details/care" title="Уход для рук и ног — подробнее">
-                        <div class="card" style="background-image:url('https://i.pinimg.com/736x/71/4c/4f/714c4f68e933ab9e2b725d93dc818d5c.jpg')">
+                        <div class="card card-care">
                             <span>Уход для рук и ног</span>
                         </div>
                     </a>
@@ -127,19 +101,19 @@
                 <!-- Массаж -->
                 <div class="cards-group" data-group="massage" hidden>
                     <a class="card-link" href="#/details/classic-massage" title="Классический массаж — подробнее">
-                        <div class="card" style="background-image:url('https://i.pinimg.com/1200x/45/19/88/45198862306fe3a7bbf8b961c6e7320c.jpg')">
+                        <div class="card card-classic-massage">
                             <span>Классический массаж</span>
                         </div>
                     </a>
 
                     <a class="card-link" href="#/details/relax" title="Релакс — подробнее">
-                        <div class="card" style="background-image:url('https://i.pinimg.com/1200x/65/d2/7a/65d27ae52710daf29cd57d276aa54a99.jpg')">
+                        <div class="card card-relax">
                             <span>Релакс</span>
                         </div>
                     </a>
 
                     <a class="card-link" href="#/details/sports-massage" title="Спортивный массаж — подробнее">
-                        <div class="card" style="background-image:url('https://i.pinimg.com/736x/38/c5/da/38c5da7085e1feb90c6cf8cdc02c5c1f.jpg')">
+                        <div class="card card-sports-massage">
                             <span>Спортивный массаж</span>
                         </div>
                     </a>
@@ -148,19 +122,19 @@
                 <!-- Косметология -->
                 <div class="cards-group" data-group="cosmetology" hidden>
                     <a class="card-link" href="#/details/face-cleaning" title="Чистка лица — подробнее">
-                        <div class="card" style="background-image:url('https://i.pinimg.com/1200x/62/97/c0/6297c0a5366767a621a0b9a01caaf5ef.jpg')">
+                        <div class="card card-face-cleaning">
                             <span>Чистка лица</span>
                         </div>
                     </a>
 
                     <a class="card-link" href="#/details/peeling" title="Пилинг — подробнее">
-                        <div class="card" style="background-image:url('https://i.pinimg.com/1200x/ff/e4/31/ffe431a279388d674a8e127da9321437.jpg')">
+                        <div class="card card-peeling">
                             <span>Пилинг</span>
                         </div>
                     </a>
 
                     <a class="card-link" href="#/details/injections" title="Инъекции красоты — подробнее">
-                        <div class="card" style="background-image:url('https://i.pinimg.com/736x/0f/91/6a/0f916acb7230bdd2bd402bc9b027f687.jpg')">
+                        <div class="card card-injections">
                             <span>Инъекции красоты</span>
                         </div>
                     </a>
@@ -169,19 +143,19 @@
                 <!-- Макияж -->
                 <div class="cards-group" data-group="makeup" hidden>
                     <a class="card-link" href="#/details/day-makeup" title="Дневной макияж — подробнее">
-                        <div class="card" style="background-image:url('https://i.pinimg.com/1200x/29/db/f8/29dbf814cd4ab85e09c67a87e220249f.jpg')">
+                        <div class="card card-day-makeup">
                             <span>Дневной макияж</span>
                         </div>
                     </a>
 
                     <a class="card-link" href="#/details/evening-makeup" title="Вечерний макияж — подробнее">
-                        <div class="card" style="background-image:url('https://i.pinimg.com/1200x/8a/14/30/8a14307e277a7d4b4568b03c7385f304.jpg')">
+                        <div class="card card-evening-makeup">
                             <span>Вечерний макияж</span>
                         </div>
                     </a>
 
                     <a class="card-link" href="#/details/wedding-makeup" title="Свадебный образ — подробнее">
-                        <div class="card" style="background-image:url('https://i.pinimg.com/1200x/0e/3f/11/0e3f11fea3b5250de519aa9390df1822.jpg')">
+                        <div class="card card-wedding-makeup">
                             <span>Свадебный образ</span>
                         </div>
                     </a>
@@ -209,7 +183,7 @@
 </div>
 
 <!-- ===== СТРАНИЦА ВХОДА ===== -->
-<div id="login" class="page auth-page" style="display: none;">
+<div id="login" class="page auth-page">
     <div class="auth-container">
         <h2>Вход в аккаунт</h2>
 
@@ -226,7 +200,7 @@
 </div>
 
 <!-- ===== СТРАНИЦА РЕГИСТРАЦИИ ===== -->
-<div id="register" class="page auth-page" style="display: none;">
+<div id="register" class="page auth-page">
     <div class="auth-container">
         <h2>Создание аккаунта</h2>
 
@@ -244,7 +218,7 @@
 </div>
 
 <!-- ===== СТРАНИЦА ПРОФИЛЯ ===== -->
-<div id="profile" class="page" style="display: none;">
+<div id="profile" class="page">
     <header class="header">
         <div class="container nav">
             <div class="logo">NIKO BEAUTY</div>
@@ -276,7 +250,7 @@
 
             <button id="editProfileBtn" class="btn primary">Редактировать профиль</button>
             <button id="logoutBtnProfile" class="btn outline">Выйти из аккаунта</button>
-            <a href="#/home" class="btn outline" style="margin-top: 10px;">На главную</a>
+            <a href="#/home" class="btn outline profile-home-link">На главную</a>
         </div>
     </main>
 
@@ -315,12 +289,12 @@
             </div>
         </form>
 
-        <div id="editMessage" class="edit-message" style="display: none;"></div>
+        <div id="editMessage" class="edit-message" hidden></div>
     </div>
 </div>
 
 <!-- ===== СТРАНИЦА ДЕТАЛЕЙ УСЛУГ ===== -->
-<div id="details" class="page" style="display: none;">
+<div id="details" class="page">
     <header class="header">
         <div class="container nav">
             <div class="logo">NIKO BEAUTY</div>
@@ -379,331 +353,7 @@
     </footer>
 </div>
 
-<script>
-const API_URL = "http://localhost:3000";
-
-// Простая функция маршрутизации
-function parseRoute() {
-    const hash = window.location.hash.slice(1); // Убрать #
-    
-    if (!hash) {
-        return { page: 'home', param: null };
-    }
-
-    const parts = hash.split('/').filter(p => p);
-    const page = parts[0] || 'home';
-    const param = parts[1] || null;
-    
-    return { page, param };
-}
-
-function showPage(pageName = 'home', param = null) {
-    // Скрыть все страницы
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-        page.style.display = 'none';
-    });
-
-    // Показать нужную страницу
-    const page = document.getElementById(pageName);
-    if (page) {
-        page.classList.add('active');
-        page.style.display = 'block';
-        window.scrollTo(0, 0);
-
-        // Если указан параметр (якорь), прокрутить к нему
-        if (param) {
-            setTimeout(() => {
-                const element = document.getElementById(param);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                }
-            }, 100);
-        }
-    }
-}
-
-function handleRoute() {
-    const { page, param } = parseRoute();
-    showPage(page, param);
-    
-    // Загрузить профиль если пользователь переходит на эту страницу
-    if (page === 'profile') {
-        loadProfile();
-    }
-}
-
-// Легаси-функция для обратной совместимости
-function goToPage(pageName, anchor = null) {
-    if (anchor) {
-        window.location.hash = `#/${pageName}/${anchor}`;
-    } else {
-        window.location.hash = `#/${pageName}`;
-    }
-}
-
-// ПРОВЕРКА АВТОРИЗАЦИИ
-
-async function checkUser() {
-    try {
-        const res = await fetch(`${API_URL}/me`, {
-            credentials: 'include'
-        });
-
-        if (res.ok) {
-            const user = await res.json();
-
-            const authBlock = document.querySelector('.auth-buttons');
-
-            if (authBlock) {
-                authBlock.innerHTML = `
-                    <div class="user-dropdown">
-                        <button class="user-name" onclick="goToPage('profile'); return false;">
-                            ${user.name}${user.role === 'admin' ? ' (Админ)' : ''}
-                            <span class="dropdown-arrow">▼</span>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a href="#" onclick="goToPage('profile'); return false;">Мой профиль</a>
-                            <a href="#" id="logoutBtnMenu">Выйти</a>
-                        </div>
-                    </div>
-                `;
-
-                const logoutBtn = document.getElementById('logoutBtnMenu');
-                if (logoutBtn) {
-                    logoutBtn.addEventListener('click', logout);
-                }
-            }
-        }
-    } catch (err) {
-        console.log("Пользователь не авторизован");
-    }
-}
-
-// РЕГИСТРАЦИЯ
-
-async function handleRegister(e) {
-    e.preventDefault();
-
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email-reg').value;
-    const password = document.getElementById('password-reg').value;
-
-    const res = await fetch(`${API_URL}/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ name, email, password })
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-        goToPage('home');
-        setTimeout(() => checkUser(), 100);
-    } else {
-        alert(data.message);
-    }
-}
-
-// ВХОД
-
-async function handleLogin(e) {
-    e.preventDefault();
-
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    const res = await fetch(`${API_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-        goToPage('home');
-        setTimeout(() => checkUser(), 100);
-    } else {
-        alert(data.message);
-    }
-}
-
-// ВЫХОД
-
-async function logout(e) {
-    e.preventDefault();
-
-    await fetch(`${API_URL}/logout`, {
-        method: 'POST',
-        credentials: 'include'
-    });
-
-    location.reload();
-}
-
-// ЗАГРУЗКА ДАННЫХ ПРОФИЛЯ
-
-async function loadProfile() {
-    try {
-        const res = await fetch(`${API_URL}/me`, {
-            credentials: 'include'
-        });
-
-        if (res.ok) {
-            const user = await res.json();
-            document.getElementById('profileName').textContent = user.name;
-            document.getElementById('profileEmail').textContent = user.email || 'Не указано';
-            document.getElementById('profileRole').textContent = user.role === 'admin' ? 'Администратор' : 'Пользователь';
-
-            const logoutBtn = document.getElementById('logoutBtnProfile');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', logout);
-            }
-
-            // Инициализация кнопки редактирования и модального окна
-            setupEditProfileModal(user);
-        }
-    } catch (err) {
-        console.log("Ошибка загрузки профиля");
-    }
-}
-
-// РЕДАКТИРОВАНИЕ ПРОФИЛЯ
-
-function setupEditProfileModal(user) {
-    const editBtn = document.getElementById('editProfileBtn');
-    const modal = document.getElementById('editProfileModal');
-    const closeBtn = document.getElementById('closeEditModal');
-    const cancelBtn = document.getElementById('cancelEditBtn');
-    const form = document.getElementById('editProfileForm');
-    const message = document.getElementById('editMessage');
-
-    // Открыть модальное окно
-    if (editBtn) {
-        editBtn.addEventListener('click', () => {
-            document.getElementById('editName').value = user.name;
-            document.getElementById('editEmail').value = user.email;
-            document.getElementById('editPassword').value = '';
-            message.style.display = 'none';
-            message.textContent = '';
-            modal.classList.add('active');
-        });
-    }
-
-    // Закрыть модальное окно
-    const closeModal = () => {
-        modal.classList.remove('active');
-        form.reset();
-    };
-
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
-
-    // Закрытие при клике на фон
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-
-    // Отправка формы
-    if (form) {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const name = document.getElementById('editName').value;
-            const email = document.getElementById('editEmail').value;
-            const password = document.getElementById('editPassword').value;
-
-            try {
-                const res = await fetch(`${API_URL}/update-profile`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ 
-                        name, 
-                        email, 
-                        password: password || null 
-                    })
-                });
-
-                const data = await res.json();
-
-                message.style.display = 'block';
-
-                if (res.ok) {
-                    message.className = 'edit-message success';
-                    message.textContent = 'Профиль успешно обновлен!';
-                    
-                    // Обновляем данные на странице
-                    document.getElementById('profileName').textContent = name;
-                    document.getElementById('profileEmail').textContent = email;
-                    
-                    setTimeout(() => {
-                        closeModal();
-                    }, 1500);
-                } else {
-                    message.className = 'edit-message error';
-                    message.textContent = data.message || 'Ошибка при обновлении профиля';
-                }
-            } catch (err) {
-                console.log('Ошибка:', err);
-                message.style.display = 'block';
-                message.className = 'edit-message error';
-                message.textContent = 'Ошибка сервера';
-            }
-        });
-    }
-}
-
-// АВТОПОДКЛЮЧЕНИЕ ФОРМ И ИНИЦИАЛИЗАЦИЯ
-
-document.addEventListener("DOMContentLoaded", () => {
-    // Инициализировать маршрутизацию
-    handleRoute();
-    window.addEventListener('hashchange', handleRoute);
-
-    checkUser();
-
-    const registerForm = document.getElementById("registerForm");
-    if (registerForm) {
-        registerForm.addEventListener("submit", handleRegister);
-    }
-
-    const loginForm = document.getElementById("loginForm");
-    if (loginForm) {
-        loginForm.addEventListener("submit", handleLogin);
-    }
-
-    // Переключение табов
-    (function(){
-        const tabs = document.querySelectorAll('#services .tab');
-        const groups = document.querySelectorAll('#services .cards-group');
-
-        function showGroup(name){
-            groups.forEach(g => {
-                g.hidden = g.dataset.group !== name;
-            });
-        }
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => {
-                    const isActive = t === tab;
-                    t.classList.toggle('active', isActive);
-                    t.setAttribute('aria-selected', isActive ? 'true' : 'false');
-                });
-                showGroup(tab.dataset.tab);
-            });
-        });
-
-        // Инициализация: показать активную вкладку при загрузке
-        const active = document.querySelector('#services .tab.active') || tabs[0];
-        if(active) showGroup(active.dataset.tab);
-    })();
-});
-</script>
+<script src="app.js"></script>
 
 </body>
 </html>
